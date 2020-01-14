@@ -9,6 +9,11 @@ const remainingItems = document.querySelector('.remaining');
 const clearCompleted = document.querySelector('.clear-btn');
 let dragged;
 
+// check local storage and initialise the ul from ls
+if(localStorage.getItem('todos')) {
+  ul.innerHTML = JSON.parse(localStorage.getItem('todos'));
+}
+
 // check and display active items
 activeCounter();
 
@@ -63,6 +68,7 @@ function addTaskItem(e) {
     addToList(userInput);
     clearInput();
     activeCounter();
+    updateLS();
   }
 }
 
@@ -104,6 +110,7 @@ function markSwitch(e) {
     }
   }
   activeCounter();
+  updateLS();
 }
 
 // remove task item
@@ -112,6 +119,7 @@ function removeItem(e) {
     e.target.parentElement.remove();
   }
   activeCounter();
+  updateLS();
 }
 
 // search list and filter out results
@@ -138,6 +146,7 @@ function clearTasks(e){
   Array.from(ul.children)
     .filter(item => item.children[0].classList.contains('done'))
     .map(item => item.remove());
+    updateLS();
 }
 
 // drag and drop a list item with mouse
@@ -150,7 +159,10 @@ function dragItems(){
   });
 
   ul.addEventListener('dragend', e => {
-    setTimeout(() => dragged.style.visibility = '', 50);
+    setTimeout(() => {
+      dragged.style.visibility = '', 50;
+      updateLS();
+    })
   });
 
   ul.addEventListener('dragenter', e => {
@@ -164,4 +176,11 @@ function dragItems(){
       } 
     }
   })
+}
+
+// locale storage update function
+function updateLS(){
+  const todos = [];
+  todos.push(ul.innerHTML)
+  localStorage.setItem('todos', JSON.stringify(todos));
 }
